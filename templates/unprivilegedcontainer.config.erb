@@ -1,0 +1,45 @@
+# PUPPET <%= @module_name %>
+lxc.arch = <%= @lxc_arch %>
+# distro specific includes
+<%- @lxc_includes.each do |lxc_include| -%>
+lxc.include = <%= lxc_include %>
+<%- end -%>
+lxc.utsname=<%= @utsname %>
+lxc.rootfs.backend = dir
+lxc.rootfs=<%= @my_container_dir %>/<%= @utsname %>/rootfs
+lxc.id_map = u 0 <%= @subuid_offset %> <%= @subuid_size %>
+lxc.id_map = g 0 <%= @subgid_offset %> <%= @subgid_size %>
+<%- if @start_on_creation -%>
+lxc.start.auto=1
+<%- else -%>
+lxc.start.auto=0
+<%- end -%>
+#lxc.autodev=1
+#lxc.tty=1
+#lxc.pts=1024
+#lxc.cap.drop=sys_module mac_admin mac_override sys_time
+#lxc.kmsg=0
+#lxc.stopsignal=SIGRTMIN+4
+#networking
+<%- if @network_devices_string -%>
+<%= @network_devices_string %>
+<%- else -%>
+  <%- @network_devices.each_pair do |key, value_hash| -%>
+  lxc.network.type=veth
+  lxc.network.flags=up
+    <%- if value_hash['bridge']-%>
+  lxc.network.link=<%= value_hash['bridge'] %>
+    <%- end -%>
+  lxc.network.name=<%= key %>
+    <%- if value_hash['ipv4_address']-%>
+  lxc.network.ipv4=<%= value_hash['ipv4_address'] %>
+    <%- end %>
+    <%- if value_hash['ipv4_gateway']-%>
+  lxc.network.ipv4.gateway=<%= value_hash['ipv4_gateway'] %>
+    <%- end -%>
+  lxc.network.mtu=1500
+  <%- end -%>
+<%- end -%>
+#cgroups
+#lxc.cgroup.memory.limit_in_bytes=<%= @mem_limit %>
+#lxc.cgroup.memory.memsw.limit_in_bytes=<%= @mem_plus_swap_limit %>

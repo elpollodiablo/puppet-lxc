@@ -1,0 +1,59 @@
+
+<%- if @lxc_cgroup_devices_deny -%>
+lxc.cgroup.devices.deny = <%= @lxc_cgroup_devices_deny %>
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_mknod_block -%>
+lxc.cgroup.devices.allow = b *:* m
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_mknod_char -%>
+lxc.cgroup.devices.allow = c *:* m
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_devnull -%>
+lxc.cgroup.devices.allow = c 1:3 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_devzero -%>
+lxc.cgroup.devices.allow = c 1:5 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_consoles -%>
+lxc.cgroup.devices.allow = c 5:0 rwm
+lxc.cgroup.devices.allow = c 5:1 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_random -%>
+lxc.cgroup.devices.allow = c 1:8 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_urandom -%>
+lxc.cgroup.devices.allow = c 1:9 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_pts -%>
+lxc.cgroup.devices.allow = c 5:2 rwm
+lxc.cgroup.devices.allow = c 136:* rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_rtc -%>
+lxc.cgroup.devices.allow = c 254:0 rm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_fuse -%>
+lxc.cgroup.devices.allow = c 10:229 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_tun -%>
+lxc.cgroup.devices.allow = c 10:200 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_full -%>
+lxc.cgroup.devices.allow = c 1:7 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_hpet -%>
+lxc.cgroup.devices.allow = c 10:228 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_kvm -%>
+lxc.cgroup.devices.allow = c 10:232 rwm
+<%- end -%>
+<%- if @lxc_cgroup_devices_allow_additional -%>
+<%- @lxc_cgroup_devices_allow_additional.each do |device| -%>
+lxc.cgroup.devices.allow = <%= device %>
+<%- end -%>
+<%- end -%>
+<%- if @lxc_cgroup_memory_limit_in_bytes -%>
+lxc.cgroup.memory.limit_in_bytes = <%= @lxc_cgroup_memory_limit_in_bytes %>
+<%- end -%>
+<%- if @lxc_cgroup_memory_memsw_limit_in_bytes -%>
+lxc.cgroup.memory.memsw.limit_in_bytes = <%= @lxc_cgroup_memory_memsw_limit_in_bytes %>
+<%- end -%>

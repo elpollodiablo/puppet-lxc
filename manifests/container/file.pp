@@ -1,0 +1,81 @@
+define lxc::container::file (
+  $path                    = undef,
+  $ensure                  = undef,
+  $utsname                 = undef,
+  $container_dir           = $lxc::defaults::container_dir,
+  $require                 = [],
+  $backup                  = undef,
+  $checksum                = undef,
+  $content                 = undef,
+  $ctime                   = undef,
+  $force                   = undef,
+  $group                   = undef,
+  $ignore                  = undef,
+  $links                   = undef,
+  $mode                    = undef,
+  $mtime                   = undef,
+  $owner                   = undef,
+  $provider                = undef,
+  $purge                   = undef,
+  $recurse                 = undef,
+  $recurselimit            = undef,
+  $replace                 = undef,
+  $selinux_ignore_defaults = undef,
+  $selrange                = undef,
+  $selrole                 = undef,
+  $seltype                 = undef,
+  $seluser                 = undef,
+  $show_diff               = undef,
+  $source                  = undef,
+  $source_permissions      = undef,
+  $sourceselect            = undef,
+  $target                  = undef,
+  $type                    = undef,
+  $validate_cmd            = undef,
+  $validate_replacement    = undef
+) {
+  if $utsname == undef or $path == undef {
+    $my_uts_and_path = split($name, ':')
+    $my_utsname = $my_uts_and_path[0]
+    $my_path = $my_uts_and_path[1]
+  } else {
+    $my_utsname = $utsname
+    $my_path = $path
+  }
+  $file_options = {
+    require => concat([Lxc::Container[$my_utsname],
+      File[$container_dir]], $require),
+    path => "${container_dir}/${my_utsname}/rootfs${my_path}",
+    ensure => $ensure,
+    backup => $backup,
+    checksum => $checksum,
+    content => $content,
+    ctime => $ctime,
+    force => $force,
+    group => $group,
+    ignore => $ignore,
+    links => $links,
+    mode => $mode,
+    mtime => $mtime,
+    owner => $owner,
+    provider => $provider,
+    purge => $purge,
+    recurse => $recurse,
+    recurselimit => $recurselimit,
+    replace => $replace,
+    selinux_ignore_defaults => $selinux_ignore_defaults,
+    selrange => $selrange,
+    selrole => $selrole,
+    seltype => $seltype,
+    seluser => $seluser,
+    show_diff => $show_diff,
+    source => $source,
+    source_permissions => $source_permissions,
+    sourceselect => $sourceselect,
+    target => $target,
+    "type" => $type,
+    validate_cmd => $validate_cmd,
+    validate_replacement => $validate_replacement,
+  }
+  create_resources(file, {$name => delete_undef_values($file_options)})
+}

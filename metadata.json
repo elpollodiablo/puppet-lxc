@@ -1,0 +1,23 @@
+{
+    "dependencies":[],
+    "operatingsystem_support": [
+        {
+            "operatingsystem": "Debian"
+        }
+    ],
+    "requirements": [
+        {
+            "name": "puppet",
+            "version_requirement": "3.0"
+        }
+    ],
+    "name": "elpollodiablo-lxc",
+    "version": "0.0.1",
+    "author": "Philip Poten <philip.poten@gmail.com>",
+    "summary": "Puppet module for managing LXC Host and LXC Containers (Linux Containers) including unprivileged containers",
+    "license": "MIT",
+    "source": "https://github.com/elpollodiablo/puppet-lxc",
+    "project_page": "https://github.com/elpollodiablo/puppet-lxc",
+    "issues_url": "https://github.com/elpollodiablo/puppet-lxc/issues"
+}
+
