@@ -4,7 +4,6 @@ define lxc::container(
   $network_devices         = {},
   $network_string          = undef,
   $network_devices_string  = undef,
-  $packages                = [],
   $ensure                  = 'present',
   $enable                  = true,
   $mem_limit               = '512M',
@@ -51,7 +50,7 @@ define lxc::container(
   $lxc_cgroup_memory_limit_in_bytes = $lxc::defaults::lxc_cgroup_memory_limit_in_bytes,
   $lxc_cgroup_memory_memsw_limit_in_bytes = $lxc::defaults::lxc_cgroup_memory_memsw_limit_in_bytes,
 ) {
-  if $unprivileged{
+  if $unprivileged {
     $my_container_dir = $unprivileged_container_dir
   } else {
     $my_container_dir = $container_dir
@@ -66,9 +65,6 @@ define lxc::container(
   $lxc_destroy      = "/usr/bin/lxc-destroy -P ${my_container_dir} -n ${utsname} || true"
   $lxc_info         = "/usr/bin/lxc-info -P ${my_container_dir} -n ${utsname}"
   $lxc_shutdown     = "/usr/bin/lxc-stop -P ${my_container_dir} -n ${utsname} -t 60 || true"
-
-  #FIXME:
-  $additional_packages = $packages
 
   if ($template =~ "lxc-download") {
     $template_options = "-d ${download_template_distribution} -r ${download_template_release} -a ${download_template_architecture} --server ${download_template_server} --variant ${download_template_variant} ${template_extra_options}"
@@ -114,15 +110,6 @@ define lxc::container(
         ensure  => directory,
         require => Exec["lxc-create ${name}"]
       }
-      if $additional_packages {
-        lxc::container::additional_packages{$utsname:
-          packages      => $additional_packages,
-          container_dir => $my_container_dir,
-          user          => $unprivileged_user,
-          # FIXME
-          distro        => "debian"
-        }
-      }
     } else {
       exec { "lxc-create ${name}":
         command   => "${lxc_create}",
@@ -135,15 +122,6 @@ define lxc::container(
         owner => "root",
         ensure  => directory,
         require => Exec["lxc-create ${name}"]
-      }
-      if $additional_packages {
-        lxc::container::additional_packages{$utsname:
-          packages      => $additional_packages,
-          container_dir => $my_container_dir,
-          user          => "root",
-          # FIXME
-          distro        => "debian"
-        }
       }
     }
 

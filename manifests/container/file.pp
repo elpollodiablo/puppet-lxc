@@ -3,6 +3,10 @@ define lxc::container::file (
   $ensure                  = undef,
   $utsname                 = undef,
   $container_dir           = $lxc::defaults::container_dir,
+  $userns_file_uid         = 0,
+  $userns_file_gid         = 0,
+  $unprivileged_user       = undef,
+  $unprivileged_group      = undef,
   $require                 = [],
   $backup                  = undef,
   $checksum                = undef,
@@ -34,6 +38,10 @@ define lxc::container::file (
   $validate_cmd            = undef,
   $validate_replacement    = undef
 ) {
+  # notify {"user, group, uid, gid: ${unprivileged_user}, ${unprivileged_group}, ${unprivileged_uid}, ${unprivileged_gid} - ${name}":}
+  if $unprivileged_user and (!$unprivileged_group or !$container_dir) {
+    fail {"this resource needs the following attributes correctly set for use with $unprivileged_user: $unprivileged_group, $container_dir":}
+  }
   if $utsname == undef or $path == undef {
     $my_uts_and_path = split($name, ':')
     $my_utsname = $my_uts_and_path[0]
@@ -42,22 +50,32 @@ define lxc::container::file (
     $my_utsname = $utsname
     $my_path = $path
   }
+  $full_path = "${container_dir}/${my_utsname}/rootfs${my_path}"
+  if ($ensure == "present") or ($ensure == undef) and $unprivileged_user {
+    $subuid_offset = $facts["subuid_${$unprivileged_user}_offset"]
+    $subgid_offset = $facts["subgid_${$unprivileged_group}_offset"]
+    $my_owner = $subuid_offset + $userns_file_uid
+    $my_group = $subgid_offset + $userns_file_gid
+  } else {
+    $my_owner = $owner
+    $my_group = $group
+  }
   $file_options = {
     require => concat([Lxc::Container[$my_utsname],
       File[$container_dir]], $require),
-    path => "${container_dir}/${my_utsname}/rootfs${my_path}",
+    path => $full_path,
     ensure => $ensure,
     backup => $backup,
     checksum => $checksum,
     content => $content,
     ctime => $ctime,
     force => $force,
-    group => $group,
+    group => $my_group,
     ignore => $ignore,
     links => $links,
     mode => $mode,
     mtime => $mtime,
-    owner => $owner,
+    owner => $my_owner,
     provider => $provider,
     purge => $purge,
     recurse => $recurse,
