@@ -40,6 +40,9 @@ lxc.start.auto=0
   lxc.network.mtu=1500
   <%- end -%>
 <%- end -%>
-#cgroups
-#lxc.cgroup.memory.limit_in_bytes=<%= @mem_limit %>
-#lxc.cgroup.memory.memsw.limit_in_bytes=<%= @mem_plus_swap_limit %>
+<%- if @lxc_cgroup_memory_limit_in_bytes -%>
+lxc.cgroup.memory.limit_in_bytes = <%= @lxc_cgroup_memory_limit_in_bytes %>
+<%- end -%>
+<%- if @lxc_cgroup_memory_memsw_limit_in_bytes -%>
+lxc.cgroup.memory.memsw.limit_in_bytes = <%= @lxc_cgroup_memory_memsw_limit_in_bytes %>
+<%- end -%>

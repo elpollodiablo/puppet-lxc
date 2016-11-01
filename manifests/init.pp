@@ -42,8 +42,8 @@ class lxc (
     template                               => $template,
     lxc_includes                           => $lxc_includes,
     lxc_arch                               => $lxc_arch,
-    lxc_cgroup_memory_limit_in_bytes       => $lxc::defaults::lxc_cgroup_memory_limit_in_bytes,
-    lxc_cgroup_memory_memsw_limit_in_bytes => $lxc::defaults::lxc_cgroup_memory_memsw_limit_in_bytes,
+    lxc_cgroup_memory_limit_in_bytes       => $lxc_cgroup_memory_limit_in_bytes,
+    lxc_cgroup_memory_memsw_limit_in_bytes => $lxc_cgroup_memory_memsw_limit_in_bytes,
     lxc_cgroup_devices_deny                => $lxc_cgroup_devices_deny,
     lxc_cgroup_devices_allow_mknod_block   => $lxc_cgroup_devices_allow_mknod_block,
     lxc_cgroup_devices_allow_mknod_char    => $lxc_cgroup_devices_allow_mknod_char,
@@ -67,6 +67,10 @@ class lxc (
     download_template_server               => $download_template_server,
   }
 
+  # platform common
+  include lxc::install
+
+  notice ("container dir is ${container_dir}, ::lxc::defaults::container_dir is ${lxc::defaults::container_dir}, lxc::defaults::download_template_release is ${lxc::defaults::download_template_release}")
   case $::osfamily {
     'Debian': {
       include lxc::install::debian
@@ -75,9 +79,6 @@ class lxc (
       fail("The ${module_name} module is not supported on an ${::osfamily} based system.")
     }
   }
-
-  # platform common
-  include lxc::install
 
   # this is a hook for puppet frameworks that prefer to generate resources iteratively
   create_resources('lxc::container', $containers, { more_facts => $more_facts })

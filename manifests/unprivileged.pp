@@ -81,7 +81,7 @@ class lxc::unprivileged (
     download_template_architecture         => $download_template_architecture,
     download_template_variant              => $download_template_variant,
     download_template_server               => $download_template_server,
-    use_jessie_pam_patch                  => $use_jessie_pam_patch,
+    use_jessie_pam_patch                   => $use_jessie_pam_patch,
   }
   if ($create_autostart_crontab) {
     cron { 'lxc autostart for ${user}:${group}':

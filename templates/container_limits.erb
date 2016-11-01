@@ -57,3 +57,12 @@ lxc.cgroup.memory.limit_in_bytes = <%= @lxc_cgroup_memory_limit_in_bytes %>
 <%- if @lxc_cgroup_memory_memsw_limit_in_bytes -%>
 lxc.cgroup.memory.memsw.limit_in_bytes = <%= @lxc_cgroup_memory_memsw_limit_in_bytes %>
 <%- end -%>
+<%- if @lxc_cgroup_cpuset_cpus -%>
+lxc.cgroup.cpuset.cpus = <%= @lxc_cgroup_cpuset_cpus %>
+<%- end -%>
+<%- if @lxc_cgroup_cpu_shares -%>
+lxc.cgroup.cpu.shares = <%= @lxc_cgroup_cpu_shares %>
+<%- end -%>
+<%- if @lxc_cgroup_cpu_shares -%>
+lxc.cgroup.cpu.shares = <%= @lxc_cgroup_cpu_shares %>
+<%- end -%>

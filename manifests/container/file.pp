@@ -7,7 +7,6 @@ define lxc::container::file (
   $userns_file_gid         = 0,
   $unprivileged_user       = undef,
   $unprivileged_group      = undef,
-  $require                 = [],
   $backup                  = undef,
   $checksum                = undef,
   $content                 = undef,
@@ -50,50 +49,58 @@ define lxc::container::file (
     $my_utsname = $utsname
     $my_path = $path
   }
+
   $full_path = "${container_dir}/${my_utsname}/rootfs${my_path}"
-  if ($ensure == "present") or ($ensure == undef) and $unprivileged_user {
+  if ($ensure == "present" or $ensure == "directory") or ($ensure == undef) and $unprivileged_user {
     $subuid_offset = $facts["subuid_${$unprivileged_user}_offset"]
     $subgid_offset = $facts["subgid_${$unprivileged_group}_offset"]
-    $my_owner = $subuid_offset + $userns_file_uid
-    $my_group = $subgid_offset + $userns_file_gid
+    if $subuid_offset == '' or $subgid_offset == '' {
+      warn {"can not deploy container::file resources in this run":}
+    } else {
+      $my_owner = $subuid_offset + $userns_file_uid
+      $my_group = $subgid_offset + $userns_file_gid
+    }
   } else {
     $my_owner = $owner
     $my_group = $group
   }
-  $file_options = {
-    require => concat([Lxc::Container[$my_utsname],
-      File[$container_dir]], $require),
-    path => $full_path,
-    ensure => $ensure,
-    backup => $backup,
-    checksum => $checksum,
-    content => $content,
-    ctime => $ctime,
-    force => $force,
-    group => $my_group,
-    ignore => $ignore,
-    links => $links,
-    mode => $mode,
-    mtime => $mtime,
-    owner => $my_owner,
-    provider => $provider,
-    purge => $purge,
-    recurse => $recurse,
-    recurselimit => $recurselimit,
-    replace => $replace,
-    selinux_ignore_defaults => $selinux_ignore_defaults,
-    selrange => $selrange,
-    selrole => $selrole,
-    seltype => $seltype,
-    seluser => $seluser,
-    show_diff => $show_diff,
-    source => $source,
-    source_permissions => $source_permissions,
-    sourceselect => $sourceselect,
-    target => $target,
-    "type" => $type,
-    validate_cmd => $validate_cmd,
-    validate_replacement => $validate_replacement,
+  if ($my_owner){
+    $file_options = {
+      require => [Lxc::Container[$my_utsname], File[$container_dir]],
+      path => $full_path,
+      ensure => $ensure,
+      backup => $backup,
+      checksum => $checksum,
+      content => $content,
+      ctime => $ctime,
+      force => $force,
+      group => $my_group,
+      ignore => $ignore,
+      links => $links,
+      mode => $mode,
+      mtime => $mtime,
+      owner => $my_owner,
+      provider => $provider,
+      purge => $purge,
+      recurse => $recurse,
+      recurselimit => $recurselimit,
+      replace => $replace,
+      selinux_ignore_defaults => $selinux_ignore_defaults,
+      selrange => $selrange,
+      selrole => $selrole,
+      seltype => $seltype,
+      seluser => $seluser,
+      show_diff => $show_diff,
+      source => $source,
+      source_permissions => $source_permissions,
+      sourceselect => $sourceselect,
+      target => $target,
+      "type" => $type,
+      validate_cmd => $validate_cmd,
+      validate_replacement => $validate_replacement,
+    }
+    create_resources(file, {$name => delete_undef_values($file_options)})
+  } else {
+    fail{"I could not create ${utsname}:${full_path}":}
   }
-  create_resources(file, {$name => delete_undef_values($file_options)})
 }

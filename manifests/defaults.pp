@@ -31,5 +31,4 @@ class lxc::defaults (
   $download_template_variant,
   $download_template_server,
 ) {
-  $configured = true
 }

@@ -12,7 +12,7 @@ class lxc::install::debian (
   $packages       = ['lxc', 'bridge-utils', 'lxcfs', 'libpam-cgfs', 'cgmanager']
 ){
   include apt
-  include lxc::install
+  #include lxc::install
 
   # install backports if the user didn't decide to provide
   # working lxc 2.0 packages another way
